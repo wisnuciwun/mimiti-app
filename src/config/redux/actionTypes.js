@@ -1,0 +1,1 @@
+export const SAVE_DAILY_DATA = 'SAVE_DAILY_DATA'
