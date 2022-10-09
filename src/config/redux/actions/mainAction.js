@@ -6,3 +6,10 @@ export const saveDailyData = (data) => {
           payload: data
      }
 }
+
+export const savePhoneNumber = (data) => {
+     return {
+          type: actionTypes.SAVE_PHONE_NUMBER,
+          payload: data
+     }
+}

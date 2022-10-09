@@ -1,1 +1,2 @@
 export const SAVE_DAILY_DATA = 'SAVE_DAILY_DATA'
+export const SAVE_PHONE_NUMBER = 'SAVE_PHONE_NUMBER'

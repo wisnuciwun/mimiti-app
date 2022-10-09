@@ -1,7 +1,8 @@
 import * as actionTypes from '../actionTypes'
 
 const initState = {
-     orderListData: []
+     orderListData: [],
+     phoneNumber: ''
 }
 
 const mainReducer = (state = initState, action) => {
@@ -10,6 +11,11 @@ const mainReducer = (state = initState, action) => {
                return {
                     ...state,
                     orderListData: action.payload
+               }
+          case actionTypes.SAVE_PHONE_NUMBER:
+               return {
+                    ...state,
+                    phoneNumber: action.payload
                }
           default:
                return state;

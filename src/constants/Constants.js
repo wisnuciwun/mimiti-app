@@ -66,9 +66,14 @@ module.exports = {
                name: 'Coklat Kacang'
           },
           POLOS: {
-               big: 9000,
-               small: 10000,
+               big: 7000,
+               small: 7000,
                name: 'Polos'
+          },
+          POLOS_BAKAR: {
+               big: 10000,
+               small: 10000,
+               name: 'Polos Bakar'
           },
      },
      INGREDIENTS: {
