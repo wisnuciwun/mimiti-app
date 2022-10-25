@@ -1,12 +1,14 @@
 import logo from './logo.svg';
 import './App.css';
-import { MDBBtn, MDBCheckbox, MDBContainer, MDBInput, MDBModal, MDBModalBody, MDBModalContent, MDBModalDialog, MDBModalFooter, MDBModalHeader, MDBModalTitle, MDBRadio } from 'mdb-react-ui-kit';
+import { MDBBadge, MDBBtn, MDBCheckbox, MDBContainer, MDBInput, MDBModal, MDBModalBody, MDBModalContent, MDBModalDialog, MDBModalFooter, MDBModalHeader, MDBModalTitle, MDBRadio, MDBTextArea } from 'mdb-react-ui-kit';
 import { useDispatch, useSelector } from 'react-redux';
 import { BREAD_PRICE, FLAVOUR_PRICE, INGREDIENTS } from './constants/Constants';
 import { Fragment, useEffect, useState } from 'react';
 import { saveDailyData, savePhoneNumber } from './config/redux/actions/mainAction';
 import toSentenceCase from './utlis/toSentenceCase';
 import Swal from 'sweetalert2'
+import 'moment/locale/id'
+import moment from 'moment';
 
 function App(props) {
   const dispatch = useDispatch()
@@ -26,6 +28,7 @@ function App(props) {
   const toggleShow2 = () => setBasicModal2(!basicModal2);
   const [basicModal2, setBasicModal2] = useState(false);
   const [ingredientsPrice, setingredientsPrice] = useState({ ...INGREDIENTS })
+  const [note, setnote] = useState('Tidak ada')
 
   const onHandleSetOrder = (e) => {
     let values = JSON.parse(e.target.value)
@@ -63,30 +66,71 @@ function App(props) {
   }
 
   const onHandlePrintOrder = () => {
-    let w = new Date().toLocaleString()
+    let w = moment().format('LLLL')
     let totalAmount = 0
+    let bigBread = 0
+    let smallBread = 0
     let v = orderList.map(v => {
       totalAmount = parseInt(totalAmount) + v.amount
+      if (v.orderName.includes('Roti Besar')) {
+        bigBread = parseInt(bigBread) + parseInt(v.quantity)
+      }
+      else if (v.orderName.includes('Roti Kecil')) {
+        smallBread = parseInt(smallBread) + parseInt(v.quantity)
+      }
       return (`%0A%2D%20${v.quantity}%20${v.orderName.replace('+', '%2B')}%20:%20Rp.%20${v.amount.toLocaleString('ID')}`)
     })
 
-    window.open(`https://api.whatsapp.com/send?phone=${savedPhoneNumber}&text=${w}%0A%0A•%20Penjualan%0A${v}%0A%0ATotal%20=%20Rp.%20${totalAmount.toLocaleString('ID')}`, '_blank')
+    window.open(`https://api.whatsapp.com/send?phone=${savedPhoneNumber}&text=${w}%0A%0A•%20Penjualan%0A${v}%0A%0ATotal%20=%20Rp.%20${totalAmount.toLocaleString('ID')}%0A%0ARoti%20Kecil%20:%20${smallBread}%0ARoti%20Besar%20:%20${bigBread}%0A%0ACatatan%20:%0A${note}`, '_blank')
     dispatch(saveDailyData([]))
     toggleShow2()
+    setnote('')
   }
 
   const onHandlePrintShopping = () => {
-    let w = new Date().toLocaleString()
+    let w = moment().format('LLLL')
     let totalAmount = 0
     let v = allShopping.map(v => {
       totalAmount = parseInt(totalAmount) + v.totalPerItem
       return (`%0A%2D%20${v.qty}%20${v.name}%20:%20Rp.%20${v.totalPerItem.toLocaleString('ID')}`)
     })
 
-    window.open(`https://api.whatsapp.com/send?phone=${savedPhoneNumber}&text=${w}%0A%0A•%20Pembelanjaan%0A${v}%0A%0ATotal%20=%20Rp.%20${totalAmount.toLocaleString('ID')}`, '_blank')
+    window.open(`https://api.whatsapp.com/send?phone=${savedPhoneNumber}&text=${w}%0A%0A•%20Pembelanjaan%0A${v}%0A%0ATotal%20=%20Rp.%20${totalAmount.toLocaleString('ID')}%0A%0ACatatan%20:%0A${note}`, '_blank')
     setallShopping([])
     setingredientsPrice({ ...INGREDIENTS })
     toggleShow()
+    setnote('')
+  }
+
+  const onHandlPrintShopAndOrder = () => {
+    let totalAmount = 0
+    let bigBread = 0
+    let smallBread = 0
+
+    let v = orderList.map(v => {
+      totalAmount = parseInt(totalAmount) + v.amount
+      if (v.orderName.includes('Roti Besar')) {
+        bigBread = parseInt(bigBread) + parseInt(v.quantity)
+      }
+      else if (v.orderName.includes('Roti Kecil')) {
+        smallBread = parseInt(smallBread) + parseInt(v.quantity)
+      }
+      return (`%0A%2D%20${v.quantity}%20${v.orderName.replace('+', '%2B')}%20:%20Rp.%20${v.amount.toLocaleString('ID')}`)
+    })
+
+    let ws = moment().format('LLLL')
+    let totalAmountShopping = 0
+    let vs = allShopping.map(v => {
+      totalAmountShopping = parseInt(totalAmountShopping) + v.totalPerItem
+      return (`%0A%2D%20${v.qty}%20${v.name}%20:%20Rp.%20${v.totalPerItem.toLocaleString('ID')}`)
+    })
+
+    window.open(`https://api.whatsapp.com/send?phone=${savedPhoneNumber}&text=${ws}%0A%0A•%20Pembelanjaan%0A${vs}%0A%0ATotal%20=%20Rp.%20${totalAmountShopping.toLocaleString('ID')}%0A%0A•%20Penjualan%0A${v}%0A%0ATotal%20=%20Rp.%20${totalAmount.toLocaleString('ID')}%0A%0ARoti%20Kecil%20:%20${smallBread}%0ARoti%20Besar%20:%20${bigBread}%0A%0ACatatan%20:%0A${note}`, '_blank')
+    dispatch(saveDailyData([]))
+    setallShopping([])
+    setingredientsPrice({ ...INGREDIENTS })
+    toggleShow2()
+    setnote('')
   }
 
   const onHandleAddShopping = (e, category, name) => {
@@ -135,7 +179,9 @@ function App(props) {
 
   return (
     <Fragment>
-      <h1 className='text-center mt-3'><b><i>Mimiti Data Recap</i></b></h1>
+      <div className='d-flex justify-content-center mt-3'>
+        <img style={{ width: '100px' }} src="/assets/mimiti.jpeg" alt="" />
+      </div>
       <MDBContainer className='pt-3'>
         <div style={{ fontSize: '11px' }} className='mb-3'>
           Isi nomor hp dibawah ini agar rekap data dapat dikirimkan ke whatsapp. <br />
@@ -147,13 +193,13 @@ function App(props) {
         <div className='d-flex justify-content-between align-items-center'>
           <h2>{view == 'SHOP' ? 'Halaman Pembelanjaan' : 'Halaman Penjualan'}</h2>
           <div>
-            <MDBBtn size='sm' onClick={() => setview('SHOP')} hidden={view == 'SHOP' ? true : false}>Pindah Halaman Penjualan</MDBBtn>
-            <MDBBtn size='sm' onClick={() => setview('SELL')} hidden={view == 'SELL' ? true : false}>Pindah Halaman Pembelanjaan</MDBBtn>
+            <MDBBtn size='sm' onClick={() => { setview('SHOP'); setnote('') }} hidden={view == 'SHOP' ? true : false}>Pindah Halaman Pembelanjaan</MDBBtn>
+            <MDBBtn size='sm' onClick={() => { setview('SELL'); setnote('') }} hidden={view == 'SELL' ? true : false}>Pindah Halaman Penjualan</MDBBtn>
           </div>
         </div>
         {
           view == 'SHOP' ?
-            <MDBContainer className='mx-0 mt-5'>
+            <MDBContainer className='mx-0 mt-4'>
               {
                 ingredientsPrice != null &&
                 // ***1PEMBELANJAAN*** //
@@ -278,7 +324,7 @@ function App(props) {
                     <span>/biji</span>
                   </div>
 
-                  <MDBBtn className='w-100' color='success' onClick={onHandleResultShopping}>Hitung !</MDBBtn>
+                  <MDBBtn className='w-100 no-capitalize btn-text' color='success' onClick={onHandleResultShopping}>Simpan &amp; Hitung</MDBBtn>
                 </>
               }
               <MDBModal show={basicModal} setShow={setBasicModal} tabIndex='-1'>
@@ -288,7 +334,7 @@ function App(props) {
                       <MDBModalTitle>Pembelanjaan Hari Ini</MDBModalTitle>
                       <MDBBtn className='btn-close' color='none' onClick={toggleShow}></MDBBtn>
                     </MDBModalHeader>
-                    <MDBModalBody style={{maxHeight: '400px', overflowY: 'auto'}}>
+                    <MDBModalBody style={{ maxHeight: '400px', overflowY: 'auto' }}>
                       {
                         allShopping.length != 0 ?
                           allShopping.map((v, id) => {
@@ -306,9 +352,12 @@ function App(props) {
                           <>Belum ada data</>
                       }
                       <p hidden={allShopping.length != 0 ? false : true}><b>Total</b> : Rp. {allShopping.length != 0 && allShopping.map(v => { return v.totalPerItem }).reduce((x, y) => x + y).toLocaleString('ID')}</p>
+                      <div className='mt-4 mb-2'>
+                        <MDBTextArea value={note} onChange={(e) => setnote(e.target.value)} label='Catatan' style={{ color: 'black' }}></MDBTextArea>
+                      </div>
                     </MDBModalBody>
                     <MDBModalFooter>
-                      <MDBBtn disabled={allShopping.length == 0 ? true : false} color='success' onClick={onHandlePrintShopping}>Kirim Data</MDBBtn>
+                      <MDBBtn className='w-100 no-capitalize btn-text' disabled={allShopping.length == 0 ? true : false} color='success' onClick={onHandlePrintShopping}>Kirim Data</MDBBtn>
                     </MDBModalFooter>
                   </MDBModalContent>
                 </MDBModalDialog>
@@ -316,9 +365,9 @@ function App(props) {
             </MDBContainer>
             :
             // ***2PENJUALAN*** //
-            <MDBContainer className="d-flex justify-content-start flex-wrap mx-0">
+            <MDBContainer className="d-flex justify-content-start flex-wrap mx-0 px-0">
               <div className='break'></div>
-              <div className='mt-5'>
+              <div className='mt-4'>
                 <p>Ukuran Roti</p>
                 <MDBRadio checked={breadSize == 'small' ? true : false} onClick={() => setbreadSize('small')} name='bread' value='small' id='flexCheckDefault' label='Kecil' />
                 <MDBRadio checked={breadSize == 'big' ? true : false} onClick={() => setbreadSize('big')} name='bread' value='big' label='Besar' />
@@ -327,19 +376,123 @@ function App(props) {
               <div>
                 <br />
                 <p>Rasa</p>
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.STRAWBERRY.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.STRAWBERRY)} label='Strawberry' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.BLUEBERRY.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.BLUEBERRY)} label='Blueberry' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.NANAS.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.NANAS)} label='Nanas' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.TARO.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.TARO)} label='Taro' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.COKLAT.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.COKLAT)} label='Coklat' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.TIRAMISU.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.TIRAMISU)} label='Tiramisu' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.KEJU.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.KEJU)} label='Keju' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.GREEN_TEA.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.GREEN_TEA)} label='Green Tea' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.CHOCO_CRUNCHY.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.CHOCO_CRUNCHY)} label='Choco Crunchy' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.COKLAT_KEJU.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.COKLAT_KEJU)} label='Coklat Keju' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.COKLAT_KACANG.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.COKLAT_KACANG)} label='Coklat Kacang' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.POLOS.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.POLOS)} label='Polos' />
-                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.POLOS_BAKAR.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.POLOS_BAKAR)} label='Polos Bakar' />
+                <MDBBadge color='bg-strawberry' className='d-flex align-items-center bg-strawberry mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.STRAWBERRY.name ? true : false}
+                    onClick={onHandleSetOrder} name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.STRAWBERRY)}
+                  />
+                  <span>Strawberry</span>
+                </MDBBadge>
+                <MDBBadge color='bg-blueberry' className='d-flex align-items-center bg-blueberry mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.BLUEBERRY.name ? true : false}
+                    onClick={onHandleSetOrder} name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.BLUEBERRY)}
+                  />
+                  <span>Blueberry</span>
+                </MDBBadge>
+                <MDBBadge color='bg-pineapple' className='d-flex align-items-center bg-pineapple mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.NANAS.name ? true : false}
+                    onClick={onHandleSetOrder} name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.NANAS)}
+                  />
+                  <span className='text-dark'>Nanas</span>
+                </MDBBadge>
+                <MDBBadge color='bg-taro' className='d-flex align-items-center bg-taro mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.TARO.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.TARO)}
+                  />
+                  <span>Taro</span>
+                </MDBBadge>
+                <MDBBadge color='bg-chocolate' className='d-flex align-items-center bg-chocolate mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.COKLAT.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.COKLAT)}
+                  />
+                  <span>Coklat</span>
+                </MDBBadge>
+                <MDBBadge color='bg-tiramisu' className='d-flex align-items-center bg-tiramisu mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.TIRAMISU.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.TIRAMISU)}
+                  />
+                  <span>Tiramisu</span>
+                </MDBBadge>
+                <MDBBadge color='bg-cheese' className='d-flex align-items-center bg-cheese mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.KEJU.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.KEJU)}
+                  />
+                  <span className='text-dark'>Keju</span>
+                </MDBBadge>
+                <MDBBadge color='bg-chococrunchy' className='d-flex align-items-center bg-chococrunchy mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.CHOCO_CRUNCHY.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.CHOCO_CRUNCHY)}
+                  />
+                  <span>Choco Crunchy</span>
+                </MDBBadge>
+                <MDBBadge color='bg-chococheese' className='d-flex align-items-center bg-chococheese mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.COKLAT_KEJU.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.COKLAT_KEJU)}
+                  />
+                  <span className='text-dark'>Coklat Keju</span>
+                </MDBBadge>
+                <MDBBadge color='bg-choconut' className='d-flex align-items-center bg-choconut mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.COKLAT_KACANG.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.COKLAT_KACANG)}
+                  />
+                  <span>Coklat Kacang</span>
+                </MDBBadge>
+                <MDBBadge color='bg-plain' className='d-flex align-items-center bg-plain mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.POLOS.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.POLOS)}
+                  />
+                  <span className='text-dark'>Polos</span>
+                </MDBBadge>
+                <MDBBadge color='bg-plain2' className='d-flex align-items-center bg-plain2 mb-2 p-2'>
+                  <MDBRadio
+                    disabled={breadSize == '' ? true : false}
+                    checked={order.flavour == FLAVOUR_PRICE.POLOS_BAKAR.name ? true : false}
+                    onClick={onHandleSetOrder}
+                    name='flavour'
+                    value={JSON.stringify(FLAVOUR_PRICE.POLOS_BAKAR)}
+                  />
+                  <span className='text-dark'>Polos Bakar</span>
+                </MDBBadge>
               </div>
               <div className='break'></div>
               <div>
@@ -357,9 +510,9 @@ function App(props) {
               </div> */}
               <div className='break'></div>
               <br />
-              <div className='d-flex justify-content-between' style={{ gap: '10px' }}>
-                <MDBBtn color='success' onClick={onHandleSaveOrder}>Tambah ke data harian</MDBBtn>
-                <MDBBtn color='warning' onClick={() => {
+              <div className='d-flex justify-content-between w-100 mt-2' style={{ gap: '10px' }}>
+                <MDBBtn className='w-50 no-capitalize btn-text' color='success' onClick={onHandleSaveOrder}>Tambah ke Data Harian</MDBBtn>
+                <MDBBtn className='w-50 no-capitalize btn-text' color='warning' onClick={() => {
                   if (savedPhoneNumber == null || savedPhoneNumber == '') {
                     Swal.fire({
                       title: 'Data tidak bisa diproses',
@@ -369,12 +522,12 @@ function App(props) {
                   } else {
                     toggleShow2()
                   }
-                }}>Cek data harian &amp; kirim nota</MDBBtn>
+                }}>Cek Data Harian &amp; Kirim Nota</MDBBtn>
               </div>
-              <div className='mt-4 w-100'>
+              <div className='mt-2 w-100'>
                 <MDBBtn
                   color='danger'
-                  className='w-100'
+                  className='w-100 no-capitalize btn-text'
                   onClick={() => {
                     Swal.fire({
                       title: 'Hapus data',
@@ -388,7 +541,7 @@ function App(props) {
                       }
                     })
                   }}>
-                  Reset data paksa
+                  Reset Data Paksa
                 </MDBBtn>
               </div>
               <MDBModal show={basicModal2} setShow={setBasicModal2} tabIndex='-1'>
@@ -398,7 +551,7 @@ function App(props) {
                       <MDBModalTitle>Penjualan Hari Ini</MDBModalTitle>
                       <MDBBtn className='btn-close' color='none' onClick={toggleShow2}></MDBBtn>
                     </MDBModalHeader>
-                    <MDBModalBody style={{maxHeight: '400px', overflowY: 'auto'}}>
+                    <MDBModalBody style={{ maxHeight: '400px', overflowY: 'auto' }}>
                       {
                         orderList.length != 0 ?
                           orderList.map((v, id) => {
@@ -416,9 +569,13 @@ function App(props) {
                           <>Belum ada data</>
                       }
                       <p hidden={orderList.length != 0 ? false : true}><b>Total</b> = Rp. {orderList.length != 0 && orderList.map(v => { return v.amount }).reduce((x, y) => x + y)?.toLocaleString('ID')}</p>
+                      <div className='mt-3 mb-2'>
+                        <MDBTextArea value={note} onChange={(e) => setnote(e.target.value)} label='Catatan' style={{ color: 'black' }}></MDBTextArea>
+                      </div>
                     </MDBModalBody>
                     <MDBModalFooter>
-                      <MDBBtn disabled={orderList.length == 0 ? true : false} color='success' onClick={onHandlePrintOrder}>Kirim Data</MDBBtn>
+                      <MDBBtn className='w-100 no-capitalize btn-text' disabled={orderList.length == 0 && allShopping.length == 0 ? true : false} onClick={onHandlPrintShopAndOrder}>Kirim Data Penjualan &amp; Pembelanjaan</MDBBtn>
+                      <MDBBtn className='w-100 no-capitalize btn-text' disabled={orderList.length == 0 ? true : false} color='success' onClick={onHandlePrintOrder}>Kirim Data</MDBBtn>
                     </MDBModalFooter>
                   </MDBModalContent>
                 </MDBModalDialog>
@@ -426,6 +583,7 @@ function App(props) {
             </MDBContainer>
         }
       </MDBContainer>
+      <h5 style={{marginTop: '-30px'}} className='text-center'><b><i>Mimiti Data Recap</i></b></h5>
     </Fragment>
   );
 }

@@ -41,3 +41,71 @@
   flex-basis: 100%;
   height: 0;
 }
+
+.bg-strawberry{
+  background-color: #EC4B53 !important;
+  background: #EC4B53;
+}
+
+.bg-blueberry{
+  background-color: #846C96 !important;
+  background: #846C96;
+}
+
+.bg-pineapple{
+  background-color: #FEEA63 !important;
+  background: #FEEA63;
+}
+
+.bg-taro{
+  background-color: #8661A5 !important;
+  background: #8661A5;
+}
+
+.bg-chocolate{
+  background-color: #9B5639 !important;
+  background: #9B5639;
+}
+
+.bg-tiramisu{
+  background-color: #C4A088 !important;
+  background: #C4A088;
+}
+
+.bg-cheese{
+  background-color: #FAD487 !important;
+  background: #FAD487;
+}
+
+.bg-chococrunchy{
+  background-color: #644638 !important;
+  background: #644638;
+}
+.bg-chococheese{
+  background-color: #E8D6B4 !important;
+  background: #E8D6B4;
+}
+
+.bg-choconut{
+  background-color: #5C3E35 !important;
+  background: #5C3E35;
+}
+
+.bg-plain{
+  background-color: #EEDEC5 !important;
+  background: #EEDEC5;
+}
+
+.bg-plain2{
+  background-color: #E3D8CA !important;
+  background: #E3D8CA;
+}
+
+.no-capitalize {
+  text-transform:none !important;
+}
+
+.btn-text{
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
