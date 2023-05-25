@@ -340,6 +340,9 @@ function App(props) {
                 <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.COKLAT_KACANG.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.COKLAT_KACANG)} label='Coklat Kacang' />
                 <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.POLOS.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.POLOS)} label='Polos' />
                 <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.POLOS_BAKAR.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.POLOS_BAKAR)} label='Polos Bakar' />
+                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.ASIN_ORI.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.ASIN_ORI)} label='Asin Original' />
+                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.ASIN_ABON.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.ASIN_ABON)} label='Asin Abon' />
+                <MDBRadio disabled={breadSize == '' ? true : false} checked={order.flavour == FLAVOUR_PRICE.ASIN_PEDAS.name ? true : false} onClick={onHandleSetOrder} name='flavour' value={JSON.stringify(FLAVOUR_PRICE.ASIN_PEDAS)} label='Asin Extra Pedas' />
               </div>
               <div className='break'></div>
               <div>
