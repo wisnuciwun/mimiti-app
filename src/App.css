@@ -81,6 +81,12 @@
   background-color: #644638 !important;
   background: #644638;
 }
+
+.bg-greentea{
+  background-color: #86A96F;
+  background: #86A96F;
+}
+
 .bg-chococheese{
   background-color: #E8D6B4 !important;
   background: #E8D6B4;
@@ -99,6 +105,21 @@
 .bg-plain2{
   background-color: #E3D8CA !important;
   background: #E3D8CA;
+}
+
+.bg-salt{
+  background-color: #DADADA !important;
+  background: #DADADA;
+}
+
+.bg-chili{
+  background-color: #C21906 !important;
+  background: #C21906;
+}
+
+.bg-abon{
+  background-color: #91321c !important;
+  background: #91321c;
 }
 
 .no-capitalize {

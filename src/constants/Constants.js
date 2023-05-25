@@ -10,6 +10,21 @@ module.exports = {
           }
      },
      FLAVOUR_PRICE: {
+          ASIN_ORI: {
+               big: 16000,
+               small: 16000,
+               name: 'Asin Original'
+          },
+          ASIN_ABON: {
+               big: 18000,
+               small: 18000,
+               name: 'Asin Abon'
+          },
+          ASIN_PEDAS: {
+               big: 18000,
+               small: 18000,
+               name: 'Asin Extra Pedas'
+          },
           STRAWBERRY: {
                big: 20000,
                small: 10000,
