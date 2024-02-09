@@ -51,7 +51,7 @@ function App(props) {
   const onHandleSetOrder = (e) => {
     let values = JSON.parse(e.target.value);
 
-    if (values.name.includes("Polos")) {
+    if (values.name == "Polos") {
       setbreadSize("big");
     }
 
@@ -276,8 +276,11 @@ function App(props) {
             </h2>
           </div>
           <div style={{ textAlign: "right", height: "55px" }}>
-            <p>v1.2.6</p>
-            <div style={{ height: "100%" }} className="d-flex align-items-end">
+            <p>v1.2.7</p>
+            <div
+              style={{ height: "100%" }}
+              className="d-lg-flex d-none align-items-end"
+            >
               <MDBBtn
                 size="sm"
                 onClick={() => {
@@ -286,7 +289,7 @@ function App(props) {
                 }}
                 hidden={view == "SHOP" ? true : false}
               >
-                Pindah Halaman Pembelanjaan
+                Ke Halaman Pembelanjaan
               </MDBBtn>
               <MDBBtn
                 size="sm"
@@ -296,10 +299,32 @@ function App(props) {
                 }}
                 hidden={view == "SELL" ? true : false}
               >
-                Pindah Halaman Penjualan
+                Ke Halaman Penjualan
               </MDBBtn>
             </div>
           </div>
+        </div>
+        <div style={{ height: "100%" }} className="d-lg-none d-flex w-100 mb-2">
+          <MDBBtn
+            size="sm"
+            onClick={() => {
+              setview("SHOP");
+              setnote("");
+            }}
+            hidden={view == "SHOP" ? true : false}
+          >
+            Ke Halaman Pembelanjaan
+          </MDBBtn>
+          <MDBBtn
+            size="sm"
+            onClick={() => {
+              setview("SELL");
+              setnote("");
+            }}
+            hidden={view == "SELL" ? true : false}
+          >
+            Ke Halaman Penjualan
+          </MDBBtn>
         </div>
         <div style={{ fontSize: "11px" }} className="mb-3">
           Isi nomor hp dibawah ini agar rekap data dapat dikirimkan ke whatsapp.{" "}
@@ -316,7 +341,7 @@ function App(props) {
           value={savedPhoneNumber}
         />
       </MDBContainer>
-      <MDBContainer className="pt-3 pb-5">
+      <MDBContainer className="pt-1 pb-5">
         {view == "SHOP" ? (
           <MDBContainer className="mx-0 mt-4">
             {ingredientsPrice != null && (
@@ -1029,7 +1054,7 @@ function App(props) {
                 className="d-flex align-items-center bg-plain mb-2 p-2"
               >
                 <MDBRadio
-                  disabled={breadSize == "" ? true : false}
+                  // disabled={breadSize == "" || order.flavour == FLAVOUR_PRICE.POLOS || order.flavour == FLAVOUR_PRICE.POLOS_BAKAR ? true : false}
                   checked={
                     order.flavour == FLAVOUR_PRICE.POLOS.name ? true : false
                   }
@@ -1044,7 +1069,7 @@ function App(props) {
                 className="d-flex align-items-center bg-plain2 mb-2 p-2"
               >
                 <MDBRadio
-                  disabled={breadSize == "" ? true : false}
+                  // disabled={breadSize == "" || order.flavour == FLAVOUR_PRICE.POLOS || order.flavour == FLAVOUR_PRICE.POLOS_BAKAR ? true : false}
                   checked={
                     order.flavour == FLAVOUR_PRICE.POLOS_BAKAR.name
                       ? true
@@ -1102,6 +1127,38 @@ function App(props) {
                   value={JSON.stringify(FLAVOUR_PRICE.ASIN_PEDAS)}
                 />
                 <span>Asin Extra Pedas</span>
+              </MDBBadge>
+              <MDBBadge
+                color="bg-oreo"
+                className="d-flex align-items-center bg-oreo mb-2 p-2"
+              >
+                <MDBRadio
+                  disabled={breadSize == "" ? true : false}
+                  checked={
+                    order.flavour == FLAVOUR_PRICE.OREO.name ? true : false
+                  }
+                  onClick={onHandleSetOrder}
+                  name="flavour"
+                  value={JSON.stringify(FLAVOUR_PRICE.OREO)}
+                />
+                <span>Oreo Cream Sweet</span>
+              </MDBBadge>
+              <MDBBadge
+                color="bg-redvelvet"
+                className="d-flex align-items-center bg-redvelvet mb-2 p-2"
+              >
+                <MDBRadio
+                  disabled={breadSize == "" ? true : false}
+                  checked={
+                    order.flavour == FLAVOUR_PRICE.RED_VELVET.name
+                      ? true
+                      : false
+                  }
+                  onClick={onHandleSetOrder}
+                  name="flavour"
+                  value={JSON.stringify(FLAVOUR_PRICE.RED_VELVET)}
+                />
+                <span>Red Velvet Cream Sweet</span>
               </MDBBadge>
             </div>
             <div className="break"></div>

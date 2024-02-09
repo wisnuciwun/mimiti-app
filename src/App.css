@@ -122,6 +122,16 @@
   background: #91321c;
 }
 
+.bg-oreo{
+  background-color: black !important;
+  background: black;
+}
+
+.bg-redvelvet{
+  background-color: #EC4B53 !important;
+  background: #EC4B53;
+}
+
 .no-capitalize {
   text-transform:none !important;
 }
